@@ -7,30 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//  회원 테이블
 model Member {
-    id Int @id @default(autoincrement())
-    memberEmail String @unique
-    memberName String
-    memberAge Int?
-    memberAddress String?
-    memberProfile String?
+    id             Int      @id @default(autoincrement())
+    memberEmail    String   @unique
+    memberName     String
+    memberAge      Int?
+    memberAddress  String?
+    memberProfile  String?
     memberCreateAt DateTime @default(now())
-    socials AuthAccount[]
 
+    // 관계 설정
+    socials          AuthAccount[]
+    carts            Cart[]
+    inquiries        Inquiry[]
 
-    @@map("tbl_member")
+    @@map("tbl_member") // 기존
 }
 
+// 인증 계정 테이블
 model AuthAccount {
-    id Int @id @default(autoincrement())
-    memberProvider AuthProvider
+    id               Int          @id @default(autoincrement())
+    memberProvider   AuthProvider
     memberProviderId String?
-    memberPassword String?
-    memberId Int
-    member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+    memberPassword   String?
+    memberId         Int
+    member           Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
     @@unique([memberProviderId, memberId])
-    @@map("tbl_auth_account")
+    @@map("tbl_auth_account") // 기존
 }
 
 enum AuthProvider {
@@ -38,4 +43,164 @@ enum AuthProvider {
     GOOGLE
     KAKAO
     NAVER
+}
+
+
+// 약 및 영양제 정보
+model Medicine {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?      @db.Text
+  type        MedicineType
+  category_id Int?
+  price       Int?
+  stock       Int          @default(0)
+  thumbnail   String?
+  is_active   Boolean      @default(true)
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @default(now()) @updatedAt
+
+  category    Category?            @relation(fields: [category_id], references: [id])
+  ingredients MedicineIngredient[]
+  symptoms    MedicineSymptom[]
+  carts       Cart[]
+
+  @@map("tbl_medicine")
+}
+
+enum MedicineType {
+  OTC
+  SUPPLEMENT
+}
+
+// 카테고리
+model Category {
+  id         Int      @id @default(autoincrement())
+  name       String?
+  parent_id  Int?
+  created_at DateTime @default(now())
+
+  medicines Medicine[]
+  parent    Category?  @relation("CategoryToCategory", fields: [parent_id], references: [id])
+  children  Category[] @relation("CategoryToCategory")
+
+  @@map("tbl_category")
+}
+
+// 성분
+model Ingredient {
+  id          Int     @id @default(autoincrement())
+  name        String?
+  description String? @db.Text
+
+  medicines   MedicineIngredient[]
+  interactionsAsA Interaction[] @relation("IngredientA")
+  interactionsAsB Interaction[] @relation("IngredientB")
+  liver_impact IngredientLiverImpact?
+
+  @@map("tbl_ingredient")
+}
+
+// 간수치 영향 분석
+model IngredientLiverImpact {
+  id              Int      @id @default(autoincrement())
+  ingredient_id   Int      @unique
+  impact_level    String?
+  description     String?  @db.Text
+  warning_message String?  @db.Text
+
+  ingredient      Ingredient @relation(fields: [ingredient_id], references: [id], onDelete: Cascade)
+
+  @@map("tbl_ingredient_liver_impact")
+}
+
+// 성분 간 상호작용
+model Interaction {
+  id              Int             @id @default(autoincrement())
+  ingredient_a_id Int
+  ingredient_b_id Int
+  type            InteractionType
+  message         String          @db.Text
+  solution        String?         @db.Text
+
+  ingredientA     Ingredient      @relation("IngredientA", fields: [ingredient_a_id], references: [id])
+  ingredientB     Ingredient      @relation("IngredientB", fields: [ingredient_b_id], references: [id])
+
+  @@unique([ingredient_a_id, ingredient_b_id])
+  @@map("tbl_interaction")
+}
+
+enum InteractionType {
+  CONFLICT
+  RECOMMENDED
+}
+
+// 약-성분 연결 테이블
+model MedicineIngredient {
+  id            Int @id @default(autoincrement())
+  medicine_id   Int
+  ingredient_id Int
+
+  medicine   Medicine   @relation(fields: [medicine_id], references: [id])
+  ingredient Ingredient @relation(fields: [ingredient_id], references: [id])
+
+  @@map("tbl_medicine_ingredient")
+}
+
+// 증상
+model Symptom {
+  id   Int     @id @default(autoincrement())
+  name String?
+
+  medicines MedicineSymptom[]
+
+  @@map("tbl_symptom")
+}
+
+// 약-증상 연결 테이블
+model MedicineSymptom {
+  id          Int @id @default(autoincrement())
+  medicine_id Int
+  symptom_id  Int
+
+  medicine Medicine @relation(fields: [medicine_id], references: [id])
+  symptom  Symptom  @relation(fields: [symptom_id], references: [id])
+
+  @@map("tbl_medicine_symptom")
+}
+
+// 바구니
+model Cart {
+  id          Int      @id @default(autoincrement())
+  member_id   Int
+  medicine_id Int
+  quantity    Int      @default(1)
+  created_at  DateTime @default(now())
+
+  member      Member   @relation(fields: [member_id], references: [id], onDelete: Cascade)
+  medicine    Medicine @relation(fields: [medicine_id], references: [id], onDelete: Cascade)
+
+  @@map("tbl_cart")
+}
+
+// 문의
+model Inquiry {
+  id          Int           @id @default(autoincrement())
+  member_id   Int
+  title       String
+  content     String        @db.Text
+  status      InquiryStatus @default(PENDING)
+  answer      String?       @db.Text
+  answered_at DateTime?
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+
+  member      Member        @relation(fields: [member_id], references: [id], onDelete: Cascade)
+
+  @@map("tbl_inquiry")
+}
+
+enum InquiryStatus {
+  PENDING
+  ANSWERED
 }
