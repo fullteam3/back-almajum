@@ -21,17 +21,6 @@ export class MemberController {
         return new ApiResponse("회원가입이 완료되었습니다.");
     }
 
-    // 회원 단일 조회
-    @ApiOperation({summary: "회원 단일 조회"})
-    @Get(":id")
-    @HttpCode(200)
-    async getMember(
-        @Param("id", ParseIntPipe) id: number,
-    ):Promise<ApiResponse>{
-        const member:MemberResponse = await this.memberService.getMember(id);
-        return new ApiResponse("회원 조회 완료되었습니다.", member)
-    }
-
     // 회원 전체 목록 조회(원래 서비스X)
     @ApiOperation({summary: "회원 전체 목록 조회"})
     @Get("")
@@ -77,13 +66,6 @@ export class MemberController {
     async withdraw(@Param("id", ParseIntPipe) id: number):Promise<ApiResponse>{
         await this.memberService.withdraw(id);
         return new ApiResponse("회원 탈퇴가 완료되었습니다.")
-    }
-
-    // 이메일로 회원 정보를 조회
-    @Get("member-id/:memberEmail")
-    async getMemberId(@Param("memberEmail") memberEmail: string){
-        const member = await this.memberService.getMemberByMemberEmail(memberEmail);
-        return {id: member?.id, memberEmail: member?.memberEmail}
     }
 
 }
