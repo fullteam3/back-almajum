@@ -19,7 +19,7 @@ export class JwtTokenService {
             email: payload.memberEmail
         },
         {
-            issuer: "sehwan",
+            issuer: "almajum",
             expiresIn: "24h"
         })
 
@@ -33,7 +33,7 @@ export class JwtTokenService {
             email: payload.memberEmail
         },
         {
-            issuer: "sehwan",
+            issuer: "almajum",
             expiresIn: "7d"
         })
 
@@ -47,7 +47,7 @@ export class JwtTokenService {
     async verifyAndExtractPayload(token: string){
         try {
             return await this.jwtService.verifyAsync(token, {
-                issuer: "sehwan"
+                issuer: "almajum"
             })
         } catch (err) {
             throw new UnauthorizedException("유효하지 않은 토큰입니다. (verifyAndExtractPayload)")
