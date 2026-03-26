@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//  회원 테이블
+// 회원 테이블
 model Member {
     id             Int      @id @default(autoincrement())
     memberEmail    String   @unique
@@ -20,9 +20,10 @@ model Member {
     // 관계 설정
     socials          AuthAccount[]
     carts            Cart[]
+    timers           Timer[]       
     inquiries        Inquiry[]
 
-    @@map("tbl_member") // 기존
+    @@map("tbl_member")
 }
 
 // 인증 계정 테이블
@@ -35,7 +36,7 @@ model AuthAccount {
     member           Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
     @@unique([memberProviderId, memberId])
-    @@map("tbl_auth_account") // 기존
+    @@map("tbl_auth_account")
 }
 
 enum AuthProvider {
@@ -45,7 +46,6 @@ enum AuthProvider {
     NAVER
 }
 
-
 // 약 및 영양제 정보
 model Medicine {
   id          Int          @id @default(autoincrement())
@@ -53,9 +53,8 @@ model Medicine {
   description String?      @db.Text
   type        MedicineType
   category_id Int?
-  price       Int?
-  stock       Int          @default(0)
   thumbnail   String?
+  image_url   String?      
   is_active   Boolean      @default(true)
   created_at  DateTime     @default(now())
   updated_at  DateTime     @default(now()) @updatedAt
@@ -64,6 +63,7 @@ model Medicine {
   ingredients MedicineIngredient[]
   symptoms    MedicineSymptom[]
   carts       Cart[]
+  timers      Timer[]              
 
   @@map("tbl_medicine")
 }
@@ -71,6 +71,20 @@ model Medicine {
 enum MedicineType {
   OTC
   SUPPLEMENT
+}
+
+// 복용 타이머 테이블
+model Timer {
+  id          Int      @id @default(autoincrement())
+  member_id   Int
+  medicine_id Int
+  intake_time String   
+  created_at  DateTime @default(now())
+
+  member      Member   @relation(fields: [member_id], references: [id], onDelete: Cascade)
+  medicine    Medicine @relation(fields: [medicine_id], references: [id], onDelete: Cascade)
+
+  @@map("tbl_timer")
 }
 
 // 카테고리
@@ -183,7 +197,7 @@ model Cart {
   @@map("tbl_cart")
 }
 
-// 문의
+// 문의하기
 model Inquiry {
   id          Int           @id @default(autoincrement())
   member_id   Int
