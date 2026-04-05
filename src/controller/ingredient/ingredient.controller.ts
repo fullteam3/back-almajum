@@ -11,4 +11,9 @@ export class IngredientController {
   analyze(@Body() dto: AnalyzeIngredientDto) {
     return this.ingredientServie.analyze(dto);
   }
+
+  @Post()
+  create(@Body() dto: CreateIngredientDto)[
+  return this.IngredientService.create(dto);
+  ]
 }
