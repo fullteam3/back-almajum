@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AnalyzeIngredientDto } from 'src/domain/ingredient/dto/analyze-ingredient.dto';
+import { CreateIngredientDto } from 'src/domain/ingredient/dto/create-ingredient.dto';
 import { IngredientRepository } from 'src/repository/ingredient/ingredient.repository';
 
 @Injectable()
@@ -36,5 +37,9 @@ export class IngredientService {
       interactions: filteredInteractions,
       liverImpacts,
     };
+  }
+
+  async create(dto: CreateIngredientDto) {
+    return this.ingredientRepository.createIngredient(dto);
   }
 }
