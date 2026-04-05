@@ -26,4 +26,13 @@ export class IngredientRepository {
       }
     })
   }
+
+  async createIngredient(data: {
+    name: string;
+    description?: string;
+  }) {
+    return this.prisma.ingredient.create({
+      data,
+    })
+  }
 }
