@@ -2,10 +2,9 @@ import { Module } from '@nestjs/common';
 import { MemberModule } from './module/member/member.module';
 import { CoreModule } from './module/core/core.module';
 import { AuthModule } from './module/auth/auth.module';
-
-import { IngredientController } from './controller/ingredient/ingredient.controller';
-import { IngredientService } from './service/ingredient/ingredient.service';
 import { PrismaModule } from './module/prisma/prisma.module';
+import { IngredientModule } from './module/ingredient/ingredient.module';
+import { InteractionModule } from './module/interaction/interaction.module';
 
 
 @Module({
@@ -13,9 +12,9 @@ import { PrismaModule } from './module/prisma/prisma.module';
     CoreModule,
     MemberModule,
     AuthModule,
-    PrismaModule
+    PrismaModule,
+    IngredientModule,
+    InteractionModule
   ],
-  controllers: [IngredientController],
-  providers: [IngredientService],
 })
 export class AppModule {}
