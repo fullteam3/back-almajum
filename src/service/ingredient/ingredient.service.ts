@@ -1,20 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { AnalyzeIngredientDto } from 'src/domain/ingredient/dto/analyze-ingredient.dto';
-import { PrismaService } from '../prisma/prisma.service';
+import { IngredientRepository } from 'src/repository/ingredient/ingredient.repository';
 
 @Injectable()
 export class IngredientService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly ingredientRepository: IngredientRepository) {}
 
   async analyze(dto: AnalyzeIngredientDto) {
     const ids = dto.ingredientIds;
 
-    // 1. 간 영향 조회
-    const liverImpacts = await this.prisma.ingredientLiverImpact.findMany({
-      where: {
-        ingredient_id: { in: ids },
-      },
-    });
+    // 1. 간 영향 조회 (repository)
+    const liverImpacts = await this.ingredientRepository.findLiverImpacts(ids);
 
     // 2. 성분 조합 만들기
     const pairs: [number, number][] = [];
@@ -26,15 +22,8 @@ export class IngredientService {
       }
     }
 
-    // 3. interaction 전체 조회 (한 번에)
-    const interactions = await this.prisma.interaction.findMany({
-      where: {
-        OR: [
-          { ingredient_a_id: { in: ids } },
-          { ingredient_b_id: { in: ids } },
-        ],
-      },
-    });
+    // 3. interaction 조회 (repository)
+    const interactions = await this.ingredientRepository.findInteractions(ids);
 
     // 4. pairs 기준 필터링
     const filteredInteractions = interactions.filter((item) =>
@@ -43,7 +32,6 @@ export class IngredientService {
       ),
     );
 
-    // 5. 결과 반환
     return {
       interactions: filteredInteractions,
       liverImpacts,
