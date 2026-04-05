@@ -2,7 +2,7 @@ import { NotFoundException } from "@nestjs/common";
 import { CreateMedicineDto } from "src/domain/medicine/dto/medicine.dto";
 import { MedicineRepository } from "src/repository/medicine/medicine.repository";
 
-export class MedicineSerive {
+export class MedicineService {
   constructor(private readonly medicineRepository: MedicineRepository) { }
 
   //생성
