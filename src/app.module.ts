@@ -5,6 +5,7 @@ import { AuthModule } from './module/auth/auth.module';
 import { PrismaModule } from './module/prisma/prisma.module';
 import { IngredientModule } from './module/ingredient/ingredient.module';
 import { InteractionModule } from './module/interaction/interaction.module';
+import { LiverImpactModule } from './module/liver-impact/liver-impact.module';
 
 
 @Module({
@@ -14,7 +15,8 @@ import { InteractionModule } from './module/interaction/interaction.module';
     AuthModule,
     PrismaModule,
     IngredientModule,
-    InteractionModule
+    InteractionModule,
+    LiverImpactModule
   ],
 })
 export class AppModule {}
