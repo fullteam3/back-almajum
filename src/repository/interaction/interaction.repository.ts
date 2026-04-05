@@ -1,6 +1,9 @@
+import { Injectable } from "@nestjs/common";
 import { InteractionType } from "@prisma/client";
 import { PrismaService } from "src/service/prisma/prisma.service";
 
+
+@Injectable()
 export class InteractionRepository {
   constructor(private readonly prisma: PrismaService) {}
 
