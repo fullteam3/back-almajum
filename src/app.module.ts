@@ -6,6 +6,7 @@ import { PrismaModule } from './module/prisma/prisma.module';
 import { IngredientModule } from './module/ingredient/ingredient.module';
 import { InteractionModule } from './module/interaction/interaction.module';
 import { LiverImpactModule } from './module/liver-impact/liver-impact.module';
+import { MedicineModule } from './module/medicine/medicine.module';
 
 
 @Module({
@@ -16,7 +17,8 @@ import { LiverImpactModule } from './module/liver-impact/liver-impact.module';
     PrismaModule,
     IngredientModule,
     InteractionModule,
-    LiverImpactModule
+    LiverImpactModule,
+    MedicineModule
   ],
 })
 export class AppModule {}
