@@ -12,7 +12,7 @@ export class LiverImpactDto{
   @ApiProperty() ingredient_id: number;
   @ApiProperty({ example: 'HIGH' }) impact_level: string;
   @ApiProperty() description: string;
-  @ApiProperty() waring_message: string;
+  @ApiProperty() warning_message: string;
 }
 
 export class AnalyzeResponseDto{
