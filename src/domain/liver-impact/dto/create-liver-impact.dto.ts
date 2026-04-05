@@ -8,7 +8,7 @@ export class CreateLiverImpactDto {
 
   @ApiProperty({ example: 'HIGE' })
   @IsString()
-  impact_lever: string;
+  impact_level: string;
 
   @ApiProperty()
   @IsString()
