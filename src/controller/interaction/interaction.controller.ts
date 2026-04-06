@@ -1,5 +1,5 @@
-import { Body, Controller, Post } from "@nestjs/common";
-import { CreateInteractionDto } from "src/domain/interaction/dto/create-interaction.dto.ts";
+import { Body, Controller, Post, Get } from "@nestjs/common";
+import { CreateInteractionDto } from "src/domain/interaction/dto/create-interaction.dto";
 
 import { InteractionService } from "src/service/interaction/interaction.service";
 
@@ -10,5 +10,10 @@ export class InteractionController {
   @Post()
   create(@Body() dto: CreateInteractionDto) {
     return this.interactionService.create(dto);
+  }
+
+  @Get()
+  findAll() {
+    return this.interactionService.findAll();
   }
 }
