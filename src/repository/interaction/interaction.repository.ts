@@ -18,4 +18,8 @@ export class InteractionRepository {
       data,
     })
   }
+
+  async findAll() {
+    return this.prisma.interaction.findMany();
+  }
 }
