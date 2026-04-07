@@ -1,5 +1,6 @@
 import { Body, Controller, Post, Get, Query } from "@nestjs/common";
 import { CheckInteractionDto } from "src/domain/check-interaction/dto/check-interaction.dto";
+import { CheckMedicineInteractionDto } from "src/domain/check-medicine-interaction/dto/check-medicine-interaction.dto";
 
 import { CreateInteractionDto } from "src/domain/interaction/dto/create-interaction.dto";
 import { InteractionService } from "src/service/interaction/interaction.service";
@@ -29,5 +30,10 @@ export class InteractionController {
   @Post('check')
 check(@Body() dto: CheckInteractionDto) {
   return this.interactionService.checkInteractions(dto.ingredientIds);
+}
+
+@Post('check/medicine')
+checkByMedicine(@Body() dto: CheckMedicineInteractionDto) {
+  return this.interactionService.checkByMedicine(dto.medicineId);
 }
 }
