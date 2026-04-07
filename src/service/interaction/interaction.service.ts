@@ -5,13 +5,14 @@ import { Interaction } from '@prisma/client';
 import { InteractionRepository } from 'src/repository/interaction/interaction.repository';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInteractionDto } from 'src/domain/interaction/dto/create-interaction.dto';
+import { MedicineIngredientRepository } from 'src/repository/medicine-ingredient/medicine-ingredient.repository';
 
 @Injectable()
 export class InteractionService {
   constructor(
     private readonly interactionRepository: InteractionRepository,
-    private readonly prisma: PrismaService
-    ,
+    private readonly prisma: PrismaService,
+    private readonly medicineIngredientRepository: MedicineIngredientRepository
   ) {}
 
   async create(dto: CreateInteractionDto) {
@@ -63,5 +64,24 @@ export class InteractionService {
     }
   
     return results;
+  }
+
+  async checkByMedicine(medicineId: number) {
+    // 1️⃣ 약의 성분 조회
+    const medicineIngredients =
+      await this.medicineIngredientRepository.findByMedicineId(medicineId);
+  
+    // 2️⃣ ingredientIds 추출
+    const ingredientIds = medicineIngredients.map(
+      (item) => item.ingredient_id,
+    );
+  
+    // 3️⃣ 성분이 2개 미만이면 검사 불필요
+    if (ingredientIds.length < 2) {
+      return [];
+    }
+  
+    // 4️⃣ 기존 로직 재사용
+    return this.checkInteractions(ingredientIds);
   }
 }
