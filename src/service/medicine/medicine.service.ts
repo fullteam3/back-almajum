@@ -1,13 +1,33 @@
-import { NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateMedicineDto } from "src/domain/medicine/dto/medicine.dto";
 import { MedicineRepository } from "src/repository/medicine/medicine.repository";
+import { PrismaService } from "../prisma/prisma.service";
 
+
+@Injectable()
 export class MedicineService {
-  constructor(private readonly medicineRepository: MedicineRepository) { }
+  constructor(private readonly medicineRepository: MedicineRepository,
+    private readonly prisma: PrismaService
+  ) { }
 
   //생성
   async create(dto: CreateMedicineDto) {
-    return this.medicineRepository.create(dto);
+    const { ingredientIds, category_id, ...medicineData } = dto;
+  
+    // 1️⃣ medicine 생성 (순수 필드만)
+    const medicine = await this.medicineRepository.create(medicineData);
+  
+    // 2️⃣ 성분 연결 🔥
+    for (const ingredientId of ingredientIds) {
+      await this.prisma.medicineIngredient.create({
+        data: {
+          medicine_id: medicine.id,
+          ingredient_id: ingredientId,
+        },
+      });
+    }
+  
+    return medicine;
   }
 
   // 전체 조회
