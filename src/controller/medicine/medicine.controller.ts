@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { CreateMedicineDto } from "src/domain/medicine/dto/medicine.dto";
+import { UpdateMedicineDto } from "src/domain/medicine/dto/update-medicine.dto";
 import { MedicineService } from "src/service/medicine/medicine.service";
 
 
@@ -21,12 +22,12 @@ export class MedicineController {
 
   // 수정
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() dto: Partial<CreateMedicineDto>,
-  ) {
-    return this.medicineService.update(Number(id),dto)
-  }
+update(
+  @Param('id') id: string,
+  @Body() dto: UpdateMedicineDto
+) {
+  return this.medicineService.update(+id, dto);
+}
 
   // 삭제
   @Delete(':id')
