@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateMedicineDto } from "src/domain/medicine/dto/medicine.dto";
 import { MedicineRepository } from "src/repository/medicine/medicine.repository";
 import { PrismaService } from "../prisma/prisma.service";
@@ -12,19 +12,32 @@ export class MedicineService {
 
   //생성
   async create(dto: CreateMedicineDto) {
-    const { ingredientIds, category_id, ...medicineData } = dto;
+    const { ingredientIds, ...data } = dto;
   
-    // 1️⃣ medicine 생성 (순수 필드만)
-    const medicine = await this.medicineRepository.create(medicineData);
+    // 1. 중복 체크
+    const exist = await this.prisma.medicine.findFirst({
+      where: { name: data.name },
+    })
+
+    if(exist) {
+      throw new BadRequestException('이미 존재하는 약입니다.');
+    }
+
+    // 2. medicine 먼저 생성
+    const medicine = await this.prisma.medicine.create({
+      data,
+    });
   
-    // 2️⃣ 성분 연결 🔥
-    for (const ingredientId of ingredientIds) {
-      await this.prisma.medicineIngredient.create({
-        data: {
-          medicine_id: medicine.id,
-          ingredient_id: ingredientId,
-        },
-      });
+    // 2. ingredientIds 있을 때만 실행 (방어코드)
+    if (ingredientIds && ingredientIds.length > 0) {
+      for (const id of ingredientIds) {
+        await this.prisma.medicineIngredient.create({
+          data: {
+            medicine_id: medicine.id,
+            ingredient_id: id,
+          },
+        });
+      }
     }
   
     return medicine;
