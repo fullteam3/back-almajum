@@ -43,6 +43,29 @@ export class MedicineService {
     return medicine;
   }
 
+  async findOne(id: number) {
+    return this.prisma.medicine.findUnique({
+      where: { id },
+      include: {
+        medicineIngredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+      },
+    });
+  }
+
+  async addIngredients(medicineId: number, ingredientIds: number[]) {
+    return this.prisma.medicineIngredient.createMany({
+      data: ingredientIds.map((id) => ({
+        medicine_id: medicineId,
+        ingredient_id: id,
+      })),
+      skipDuplicates: true,
+    });
+  }
+
   // 전체 조회
   async findAll() {
     return this.medicineRepository.findAll();
