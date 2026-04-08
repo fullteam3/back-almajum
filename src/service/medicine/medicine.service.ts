@@ -44,7 +44,7 @@ export class MedicineService {
   }
 
   async findOne(id: number) {
-    return this.prisma.medicine.findUnique({
+    const data = await this.prisma.medicine.findUnique({
       where: { id },
       include: {
         medicineIngredients: {
@@ -54,6 +54,18 @@ export class MedicineService {
         },
       },
     });
+  
+    if (!data) {
+      throw new NotFoundException('약이 존재하지 않습니다');
+    }
+  
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      type: data.type,
+      ingredients: data.medicineIngredients.map(mi => mi.ingredient),
+    };
   }
 
   async addIngredients(medicineId: number, ingredientIds: number[]) {
