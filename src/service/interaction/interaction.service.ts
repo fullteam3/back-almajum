@@ -48,7 +48,15 @@ export class InteractionService {
   }
 
   async checkInteractions(ingredientIds: number[]) {
-    const results: Interaction[] = [];
+    const results: any[] = [];
+  
+    const liverImpacts = await this.prisma.ingredientLiverImpact.findMany({
+      where: {
+        ingredient_id: { in: ingredientIds },
+      }
+    });
+  
+    const maxLiverImpact = this.getMaxLiverImpact(liverImpacts);
   
     for (let i = 0; i < ingredientIds.length; i++) {
       for (let j = i + 1; j < ingredientIds.length; j++) {
@@ -58,12 +66,36 @@ export class InteractionService {
         const interaction = await this.findPair(a, b);
   
         if (interaction) {
-          results.push(interaction);
+          results.push({
+            ...interaction,
+            liverImpact: maxLiverImpact,
+          });
         }
       }
     }
   
     return results;
+  }
+
+  getMaxLiverImpact(liverImpacts: any[]) {
+    if(!liverImpacts.length) return 'NONE';
+
+    const priority = {
+      NONE: 0,
+      LOW: 1,
+      MEDIUM: 2,
+      HIGH: 3,
+    };
+
+    let max = "NONE";
+
+    for(const item of liverImpacts) {
+      if(priority[item.level] > priority[max]) {
+        max = item.level;
+      }
+    }
+
+    return max;
   }
 
   async checkByMedicine(medicineId: number) {
