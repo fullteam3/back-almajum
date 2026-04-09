@@ -1,13 +1,81 @@
-import { NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateMedicineDto } from "src/domain/medicine/dto/medicine.dto";
 import { MedicineRepository } from "src/repository/medicine/medicine.repository";
+import { PrismaService } from "../prisma/prisma.service";
 
+
+@Injectable()
 export class MedicineService {
-  constructor(private readonly medicineRepository: MedicineRepository) { }
+  constructor(private readonly medicineRepository: MedicineRepository,
+    private readonly prisma: PrismaService
+  ) { }
 
   //생성
   async create(dto: CreateMedicineDto) {
-    return this.medicineRepository.create(dto);
+    const { ingredientIds, ...data } = dto;
+  
+    // 1. 중복 체크
+    const exist = await this.prisma.medicine.findFirst({
+      where: { name: data.name },
+    })
+
+    if(exist) {
+      throw new BadRequestException('이미 존재하는 약입니다.');
+    }
+
+    // 2. medicine 먼저 생성
+    const medicine = await this.prisma.medicine.create({
+      data,
+    });
+  
+    // 2. ingredientIds 있을 때만 실행 (방어코드)
+    if (ingredientIds && ingredientIds.length > 0) {
+      for (const id of ingredientIds) {
+        await this.prisma.medicineIngredient.create({
+          data: {
+            medicine_id: medicine.id,
+            ingredient_id: id,
+          },
+        });
+      }
+    }
+  
+    return medicine;
+  }
+
+  async findOne(id: number) {
+    const data = await this.prisma.medicine.findUnique({
+      where: { id },
+      include: {
+        medicineIngredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+      },
+    });
+  
+    if (!data) {
+      throw new NotFoundException('약이 존재하지 않습니다');
+    }
+  
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      type: data.type,
+      ingredients: data.medicineIngredients.map(mi => mi.ingredient),
+    };
+  }
+
+  async addIngredients(medicineId: number, ingredientIds: number[]) {
+    return this.prisma.medicineIngredient.createMany({
+      data: ingredientIds.map((id) => ({
+        medicine_id: medicineId,
+        ingredient_id: id,
+      })),
+      skipDuplicates: true,
+    });
   }
 
   // 전체 조회

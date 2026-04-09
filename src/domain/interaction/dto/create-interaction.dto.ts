@@ -24,4 +24,3 @@ export class CreateInteractionDto {
   @IsString()
   solution?: string;
 }
-

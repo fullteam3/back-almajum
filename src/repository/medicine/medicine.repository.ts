@@ -1,13 +1,20 @@
+import { Injectable } from "@nestjs/common";
 import { CreateMedicineDto } from "src/domain/medicine/dto/medicine.dto";
 import { PrismaService } from "src/service/prisma/prisma.service";
 
+
+@Injectable()
 export class MedicineRepository{
   constructor(private readonly prisma: PrismaService) { }
   
-  async create(data: CreateMedicineDto) {
+  async create(data: any) {
     return this.prisma.medicine.create({
-      data,
-    })
+      data: {
+        name: data.name,
+        description: data.description,
+        type: data.type,
+      },
+    });
   }
 
   async findAll() {
