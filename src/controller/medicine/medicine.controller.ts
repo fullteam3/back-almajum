@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/commo
 import { AddIngredientDto } from "src/domain/medicine/dto/add-ingredient.dto";
 import { CreateMedicineDto } from "src/domain/medicine/dto/medicine.dto";
 import { UpdateMedicineDto } from "src/domain/medicine/dto/update-medicine.dto";
+import { AddSymptomDto } from "src/domain/symptom/dto/add-symptom.dto";
 import { MedicineService } from "src/service/medicine/medicine.service";
 
 
@@ -47,5 +48,13 @@ findOne(@Param('id') id: string) {
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.medicineService.delete(Number(id))
+  }
+
+  @Post(':id/symptoms')
+  addSymptoms(
+    @Param('id') id: string,
+    @Body() dto: AddSymptomDto
+  ) {
+    return this.medicineService.addSymptoms(+id, dto.symptomIds);
   }
 }

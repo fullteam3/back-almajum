@@ -181,6 +181,8 @@ model MedicineSymptom {
   medicine Medicine @relation(fields: [medicine_id], references: [id])
   symptom  Symptom  @relation(fields: [symptom_id], references: [id])
 
+  @@unique([medicine_id, symptom_id])
+
   @@map("tbl_medicine_symptom")
 }
 

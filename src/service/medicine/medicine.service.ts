@@ -104,4 +104,14 @@ export class MedicineService {
     await this.findById(id); //존재 여부 체크
     return this.medicineRepository.delete(id);
   }
+
+  async addSymptoms(medicineId: number, symptomIds: number[]) {
+    return this.prisma.medicineSymptom.createMany({
+      data: symptomIds.map(id => ({
+        medicine_id: medicineId,
+        symptom_id: id,
+      })),
+      skipDuplicates: true,
+    });
+  }
 }

@@ -7,6 +7,8 @@ import { IngredientModule } from './module/ingredient/ingredient.module';
 import { InteractionModule } from './module/interaction/interaction.module';
 import { LiverImpactModule } from './module/liver-impact/liver-impact.module';
 import { MedicineModule } from './module/medicine/medicine.module';
+import { RecommendModule } from './module/recommend/recommend.module';
+import { SymptomModule } from './module/symptom/symptom.module';
 
 
 @Module({
@@ -18,7 +20,9 @@ import { MedicineModule } from './module/medicine/medicine.module';
     IngredientModule,
     InteractionModule,
     LiverImpactModule,
-    MedicineModule
+    MedicineModule,
+    RecommendModule,
+    SymptomModule
   ],
 })
 export class AppModule {}
