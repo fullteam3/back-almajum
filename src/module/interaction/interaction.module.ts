@@ -12,7 +12,8 @@ import { MedicineIngredientRepository } from "src/repository/medicine-ingredient
     InteractionService, 
     InteractionRepository,
     MedicineIngredientRepository
-  ]
+  ],
+  exports: [InteractionService]
 })
 
 export class InteractionModule { }
