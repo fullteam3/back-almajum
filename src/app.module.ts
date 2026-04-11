@@ -8,6 +8,7 @@ import { InteractionModule } from './module/interaction/interaction.module';
 import { LiverImpactModule } from './module/liver-impact/liver-impact.module';
 import { MedicineModule } from './module/medicine/medicine.module';
 import { RecommendModule } from './module/recommend/recommend.module';
+import { SymptomModule } from './module/symptom/symptom.module';
 
 
 @Module({
@@ -20,7 +21,8 @@ import { RecommendModule } from './module/recommend/recommend.module';
     InteractionModule,
     LiverImpactModule,
     MedicineModule,
-    RecommendModule
+    RecommendModule,
+    SymptomModule
   ],
 })
 export class AppModule {}
