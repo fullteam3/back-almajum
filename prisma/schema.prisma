@@ -50,6 +50,7 @@ enum AuthProvider {
 model Medicine {
   id          Int          @id @default(autoincrement())
   name        String
+  medicineIngredients MedicineIngredient[]
   description String?      @db.Text
   type        MedicineType
   category_id Int?
@@ -60,7 +61,6 @@ model Medicine {
   updated_at  DateTime     @default(now()) @updatedAt
 
   category    Category?            @relation(fields: [category_id], references: [id])
-  ingredients MedicineIngredient[]
   symptoms    MedicineSymptom[]
   carts       Cart[]
   timers      Timer[]              
@@ -158,6 +158,7 @@ model MedicineIngredient {
   medicine   Medicine   @relation(fields: [medicine_id], references: [id])
   ingredient Ingredient @relation(fields: [ingredient_id], references: [id])
 
+  @@unique([medicine_id, ingredient_id])
   @@map("tbl_medicine_ingredient")
 }
 
@@ -179,6 +180,8 @@ model MedicineSymptom {
 
   medicine Medicine @relation(fields: [medicine_id], references: [id])
   symptom  Symptom  @relation(fields: [symptom_id], references: [id])
+
+  @@unique([medicine_id, symptom_id])
 
   @@map("tbl_medicine_symptom")
 }

@@ -3,11 +3,17 @@ import { PrismaModule } from 'src/module/prisma/prisma.module';
 import { InteractionController } from "src/controller/interaction/interaction.controller";
 import { InteractionService } from "src/service/interaction/interaction.service";
 import { InteractionRepository } from "src/repository/interaction/interaction.repository";
+import { MedicineIngredientRepository } from "src/repository/medicine-ingredient/medicine-ingredient.repository";
 
 @Module({
   imports: [PrismaModule],
   controllers: [InteractionController],
-  providers: [InteractionService, InteractionRepository]
+  providers: [
+    InteractionService, 
+    InteractionRepository,
+    MedicineIngredientRepository
+  ],
+  exports: [InteractionService]
 })
 
 export class InteractionModule { }

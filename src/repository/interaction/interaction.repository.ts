@@ -22,4 +22,16 @@ export class InteractionRepository {
   async findAll() {
     return this.prisma.interaction.findMany();
   }
+
+  async findPair(a: number, b: number) {
+    const min = Math.min(a, b);
+    const max = Math.max(a, b);
+  
+    return this.prisma.interaction.findFirst({
+      where: {
+        ingredient_a_id: min,
+        ingredient_b_id: max,
+      },
+    });
+  }
 }
