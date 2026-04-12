@@ -7,6 +7,9 @@ import { IngredientModule } from './module/ingredient/ingredient.module';
 import { InteractionModule } from './module/interaction/interaction.module';
 import { LiverImpactModule } from './module/liver-impact/liver-impact.module';
 import { MedicineModule } from './module/medicine/medicine.module';
+import { TimerService } from './service/timer/timer.service';
+import { TimerController } from './controller/timer/timer.controller';
+import { TimerModule } from './module/timer/timer.module';
 
 
 @Module({
@@ -18,7 +21,10 @@ import { MedicineModule } from './module/medicine/medicine.module';
     IngredientModule,
     InteractionModule,
     LiverImpactModule,
-    MedicineModule
+    MedicineModule,
+    TimerModule
   ],
+  providers: [],
+  controllers: [],
 })
 export class AppModule {}
